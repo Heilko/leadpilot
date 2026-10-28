@@ -1,0 +1,19 @@
+# Local production-like run — the easiest way to PRACTICE a real deployment.
+#   1. cp .env.example .env   (then fill in ANTHROPIC_API_KEY and DASHBOARD_PASSWORD)
+#   2. docker compose up --build
+#   3. open http://localhost:3000  (demo site) and http://localhost:3000/dashboard
+# Data persists in the named volume across restarts, exactly like the real host's disk.
+services:
+  leadpilot:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      - DB_PATH=/data/data.sqlite
+    volumes:
+      - leadpilot-data:/data
+    restart: unless-stopped
+
+volumes:
+  leadpilot-data:

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LeadPilot — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14201E; --muted:#5E6E6B; --paper:#EEF2F1; --surface:#FFFFFF;
+    --accent:#0E5E59; --line:#DCE4E2;
+    --hot:#C84B2F; --warm:#D99A2B; --cold:#7A8C99;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:Inter,-apple-system,sans-serif;background:var(--paper);color:var(--ink);font-size:14px}
+  h1,h2,.stat b{font-family:"Space Grotesk",Inter,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 64px}
+  header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:28px}
+  header h1{font-size:22px;letter-spacing:-.02em}
+  header h1 span{color:var(--accent)}
+  header small{color:var(--muted)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .stat b{font-size:28px;display:block;letter-spacing:-.02em}
+  .stat span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .stat.hotline b{color:var(--hot)}
+  h2{font-size:15px;margin:26px 0 10px;letter-spacing:-.01em}
+  table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;background:#F7FAF9}
+  tr:last-child td{border-bottom:none}
+  tr.lead-row{cursor:pointer}
+  tr.lead-row:hover td{background:#F4F8F7}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;color:#fff}
+  .pill.hot{background:var(--hot)} .pill.warm{background:var(--warm)} .pill.cold{background:var(--cold)}
+  .empty{padding:28px;text-align:center;color:var(--muted);background:var(--surface);
+    border:1px dashed var(--line);border-radius:12px}
+  .notes{color:var(--muted);font-size:12.5px;max-width:320px}
+  /* login */
+  .login{max-width:340px;margin:18vh auto;background:var(--surface);border:1px solid var(--line);
+    border-radius:14px;padding:28px;text-align:center}
+  .login h1{font-size:20px;margin-bottom:4px}
+  .login p{color:var(--muted);margin-bottom:18px;font-size:13px}
+  .login input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font-size:14px;
+    margin-bottom:10px;font-family:inherit}
+  .login button,.refresh{width:100%;padding:11px;border:none;border-radius:9px;background:var(--accent);
+    color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit}
+  .login .err{color:var(--hot);font-size:12.5px;min-height:16px;margin-top:6px}
+  .refresh{width:auto;padding:8px 16px;font-size:12.5px}
+  /* conversation modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(20,32,30,.45);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--surface);border-radius:14px;max-width:480px;width:100%;max-height:75vh;
+    display:flex;flex-direction:column;overflow:hidden}
+  .modal header{padding:14px 18px;border-bottom:1px solid var(--line);margin:0}
+  .modal .conv{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
+  .modal .m{max-width:85%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.45;white-space:pre-wrap}
+  .modal .m.user{background:var(--accent);color:#fff;align-self:flex-end}
+  .modal .m.assistant{background:var(--surface);align-self:flex-start;border:1px solid var(--line)}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.notes{max-width:none}}
+</style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <h1>Lead<span style="color:var(--accent)">Pilot</span></h1>
+  <p>Owner dashboard — enter your password</p>
+  <input type="password" id="pw" placeholder="Password" autocomplete="current-password"/>
+  <button onclick="tryLogin()">Open dashboard</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <header>
+    <h1>Lead<span>Pilot</span> <small id="biz"></small></h1>
+    <div><button class="refresh" id="pauseBtn" onclick="togglePause()" style="background:#fff;color:var(--hot);border:1px solid var(--line);margin-right:8px">⏸ Pausar asistente</button><button class="refresh" onclick="exportCsv()" style="background:#fff;color:var(--accent);border:1px solid var(--line);margin-right:8px">Export CSV</button><button class="refresh" onclick="load()">Refresh</button></div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><b id="sLeads">0</b><span>Total leads</span></div>
+    <div class="stat hotline"><b id="sHot">0</b><span>Hot leads</span></div>
+    <div class="stat"><b id="sQual">0</b><span>Qualified</span></div>
+    <div class="stat"><b id="sAppt">0</b><span>Appointments</span></div>
+  </div>
+
+  <h2>Upcoming appointments</h2>
+  <div id="apptBox"></div>
+
+  <h2>Leads <small style="color:var(--muted);font-weight:400">(click a row to read the conversation)</small></h2>
+  <div id="leadBox"></div>
+
+  <h2>Notifications <small style="color:var(--muted);font-weight:400">(alerts when a booking or hot lead comes in)</small></h2>
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:8px">
+    <div id="notifChannels" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px"></div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <button class="refresh" onclick="sendTestNotif()" id="testBtn">Send test notification</button>
+      <span id="notifResult" style="font-size:13px;color:var(--muted)"></span>
+    </div>
+  </div>
+
+  <h2>Cost &amp; margin <small style="color:var(--muted);font-weight:400">(this client)</small></h2>
+  <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat"><b id="cMonth">$0.00</b><span>API cost this month</span></div>
+    <div class="stat"><b id="cProj">$0.00</b><span>Projected full month</span></div>
+    <div class="stat"><b id="cAvg">$0.00</b><span>Avg cost / conversation</span></div>
+    <div class="stat"><b id="cCache">0%</b><span>Served from cache</span></div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:4px">
+    <div style="display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end">
+      <label style="font-size:13px;color:var(--muted)">Your monthly price (€)
+        <input id="inPrice" type="number" value="129" oninput="recalc()"
+          style="display:block;margin-top:5px;width:120px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:15px;font-family:inherit"></label>
+      <label style="font-size:13px;color:var(--muted)">Hosting ($/mo)
+        <input id="inHost" type="number" value="7" oninput="recalc()"
+          style="display:block;margin-top:5px;width:90px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:15px;font-family:inherit"></label>
+      <label style="font-size:13px;color:var(--muted)">€ per $ (FX)
+        <input id="inFx" type="number" step="0.01" value="0.92" oninput="recalc()"
+          style="display:block;margin-top:5px;width:90px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:15px;font-family:inherit"></label>
+      <div style="flex:1;min-width:230px;border-left:1px solid var(--line);padding-left:22px">
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted);margin-bottom:4px"><span>Your cost (projected, €)</span><b id="oCost" style="color:var(--ink);font-family:'Space Grotesk',Inter,sans-serif">€0</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted);margin-bottom:4px"><span>Your margin (€)</span><b id="oMargin" style="color:var(--accent);font-family:'Space Grotesk',Inter,sans-serif">€0</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted)"><span>Margin %</span><b id="oPct" style="color:var(--accent);font-family:'Space Grotesk',Inter,sans-serif">0%</b></div>
+      </div>
+    </div>
+    <p id="costNote" style="font-size:11.5px;color:var(--muted);margin:14px 0 0;line-height:1.5"></p>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <header><b>Conversation</b></header>
+    <div class="conv" id="conv"></div>
+  </div>
+</div>
+
+<script>
+const KEY = "lp_dash_token";
+function token(){ return sessionStorage.getItem(KEY) || ""; }
+
+async function api(path){
+  const r = await fetch(path, { headers: { Authorization: "Bearer " + token() } });
+  if (r.status === 401) throw new Error("auth");
+  return r.json();
+}
+
+async function tryLogin(){
+  sessionStorage.setItem(KEY, document.getElementById("pw").value);
+  try {
+    await api("/api/leads");
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    load();
+  } catch {
+    document.getElementById("loginErr").textContent = "Wrong password.";
+  }
+}
+document.getElementById("pw").addEventListener("keydown", e => { if(e.key==="Enter") tryLogin(); });
+
+function esc(s){ const d=document.createElement("div"); d.textContent=s??""; return d.innerHTML; }
+function fmtDate(iso){
+  try { return new Date(iso).toLocaleString("es-ES",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}); }
+  catch { return iso; }
+}
+
+async function load(){
+  let leads, appts, cfg, usage, notif;
+  [leads, appts, cfg, usage, notif] = await Promise.all([
+    api("/api/leads"), api("/api/appointments"),
+    fetch("/api/widget-config").then(r=>r.json()),
+    api("/api/usage"), api("/api/notify-status"),
+  ]);
+  _usage = usage;
+  _leads = leads;
+  renderNotif(notif);
+  if (cfg.vocabulary) _vocab = { ..._vocab, ...cfg.vocabulary };
+  document.getElementById("biz").textContent = "· " + cfg.businessName;
+  document.getElementById("sLeads").textContent = leads.length;
+  document.getElementById("sHot").textContent = leads.filter(l=>l.score==="hot").length;
+  document.getElementById("sQual").textContent = leads.filter(l=>l.qualified).length;
+  document.getElementById("sAppt").textContent = appts.length;
+
+  document.getElementById("apptBox").innerHTML = appts.length ? `
+    <table><thead><tr><th>When</th><th>Name</th><th>Contact</th><th>Service</th></tr></thead><tbody>
+    ${appts.map(a=>`<tr><td><b>${esc(fmtDate(a.starts_at))}</b></td><td>${esc(a.name)}</td>
+      <td>${esc(a.contact)}</td><td>${esc(a.service)}</td></tr>`).join("")}
+    </tbody></table>`
+    : `<div class="empty">No appointments yet. They appear here the moment the agent books one.</div>`;
+
+  document.getElementById("leadBox").innerHTML = leads.length ? `
+    <table><thead><tr><th>Score</th><th>Name</th><th>Contact</th><th>Interest</th><th>Notes</th><th>Date</th><th></th></tr></thead><tbody>
+    ${leads.map((l,i)=>`<tr class="lead-row" onclick="openConvIdx(${i})">
+      <td><span class="pill ${esc(l.score)}">${esc(l.score).toUpperCase()}</span></td>
+      <td><b>${esc(l.name||"—")}</b></td>
+      <td>${esc(l.email||"")}${l.email&&l.phone?"<br>":""}${esc(l.phone||"")||(l.email?"":"—")}</td>
+      <td>${esc(l.interest||"—")}</td>
+      <td class="notes">${esc(l.notes||"")}</td>
+      <td style="color:var(--muted)">${esc((l.created_at||"").slice(0,16))}</td>
+      <td><button title="Delete this person's data (erasure request)" onclick="event.stopPropagation();deleteLead(${l.id})"
+        style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px 6px">🗑</button></td></tr>`).join("")}
+    </tbody></table>`
+    : `<div class="empty">No leads yet. Open the demo site and talk to the agent — your first lead will show up here.</div>`;
+
+  renderCost();
+  refreshPause();
+
+  // If we arrived from a notification's "Open conversation" link (?lead=<session>),
+  // pop that conversation open automatically.
+  const wanted = new URLSearchParams(location.search).get("lead");
+  if (wanted && leads.some(l => l.session_id === wanted)) openConv(wanted);
+}
+
+let _usage = null;
+function renderNotif(n){
+  const ch = [
+    ["Email", n.email], ["Telegram", n.telegram], ["Webhook", n.webhook],
+  ];
+  const pill = (label, st) => {
+    const color = st.configured ? "var(--accent)" : st.enabled ? "var(--warm)" : "var(--cold)";
+    const txt = st.configured ? "ready" : st.enabled ? "needs setup" : "off";
+    return `<span style="display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px">
+      <span style="width:8px;height:8px;border-radius:50%;background:${color}"></span>${label}: <b style="color:${color}">${txt}</b></span>`;
+  };
+  document.getElementById("notifChannels").innerHTML = ch.map(([l,s])=>pill(l,s)).join("") +
+    `<span style="font-size:12px;color:var(--muted);align-self:center;margin-left:4px">
+      Alerts on: ${[n.events.booking?"bookings":null, n.events.hotLead?"hot leads":null].filter(Boolean).join(" + ")||"nothing"}</span>`;
+}
+
+async function sendTestNotif(){
+  const btn = document.getElementById("testBtn");
+  const out = document.getElementById("notifResult");
+  btn.disabled = true; out.textContent = "Sending…";
+  try {
+    const r = await fetch("/api/notify-test", { method:"POST", headers:{ Authorization:"Bearer "+token() } });
+    const data = await r.json();
+    const results = data.results || [];
+    if (!results.length || (results[0] && results[0].channel==="none")) {
+      out.textContent = "No channels configured yet — turn one on in business.config.json and add its key to .env.";
+    } else {
+      out.innerHTML = results.map(x =>
+        `${x.ok?"✓":"✗"} ${esc(x.channel)}${x.ok?"":" ("+esc(x.detail||"failed")+")"}`).join("&nbsp;&nbsp;");
+    }
+  } catch { out.textContent = "Error sending test."; }
+  btn.disabled = false;
+}
+
+function renderCost(){
+  const u = _usage; if (!u) return;
+  const month = u.month.costUsd;
+  const proj = u.today ? month / u.today * u.daysInMonth : month;
+  document.getElementById("cMonth").textContent = "$" + month.toFixed(2);
+  document.getElementById("cProj").textContent = "$" + proj.toFixed(2);
+  document.getElementById("cAvg").textContent = "$" + u.avgCostPerConversationUsd.toFixed(3);
+  document.getElementById("cCache").textContent = Math.round(u.cacheReadShare * 100) + "%";
+  recalc();
+}
+
+function recalc(){
+  const u = _usage; if (!u) return;
+  const price = parseFloat(document.getElementById("inPrice").value) || 0;
+  const host = parseFloat(document.getElementById("inHost").value) || 0;
+  const fx = parseFloat(document.getElementById("inFx").value) || 0.92;
+  const apiProjUsd = u.today ? u.month.costUsd / u.today * u.daysInMonth : u.month.costUsd;
+  const costUsd = apiProjUsd + host;
+  const costEur = costUsd * fx;
+  const margin = price - costEur;
+  const pct = price ? (margin / price * 100) : 0;
+  document.getElementById("oCost").textContent = "€" + costEur.toFixed(2);
+  document.getElementById("oMargin").textContent = "€" + margin.toFixed(2);
+  document.getElementById("oPct").textContent = Math.round(pct) + "%";
+  const conv = u.month.conversations;
+  document.getElementById("costNote").textContent =
+    `Based on ${conv} conversation${conv===1?"":""} so far this month on ${u.pricing.model} ` +
+    `($${u.pricing.inputPerM}/M in, $${u.pricing.outputPerM}/M out). ` +
+    `Projected API cost $${apiProjUsd.toFixed(2)} + hosting $${host.toFixed(2)} = $${costUsd.toFixed(2)} ≈ €${costEur.toFixed(2)} at ${fx} €/$. ` +
+    `Cache is saving you money on every repeat call — the "served from cache" number is input you're billed ~10% for instead of full price.`;
+}
+
+let _leads = [];
+function openConvIdx(i){ if (_leads[i]) openConv(_leads[i].session_id); }
+async function openConv(sessionId){
+  const msgs = await api("/api/conversation/" + encodeURIComponent(sessionId));
+  document.getElementById("conv").innerHTML = msgs.map(m =>
+    `<div class="m ${esc(m.role)}">${esc(m.content)}</div>`).join("") || "<div class='empty'>Empty</div>";
+  document.getElementById("modalBg").classList.add("open");
+}
+
+// Sector wording, filled from /api/widget-config on load (neutral until then).
+let _vocab = { customer: "cliente", customerPlural: "clientes", business: "el negocio", appointment: "cita" };
+let _paused = false;
+async function refreshPause(){
+  try {
+    const s = await api("/api/assistant-state");
+    _paused = !!s.paused;
+    const b = document.getElementById("pauseBtn");
+    b.textContent = _paused ? "▶ Reanudar asistente" : "⏸ Pausar asistente";
+    b.style.background = _paused ? "var(--hot)" : "#fff";
+    b.style.color = _paused ? "#fff" : "var(--hot)";
+    b.title = _paused
+      ? `El asistente está EN PAUSA: pide a los visitantes que contacten a ${_vocab.business} directamente.`
+      : "Pausa el asistente al instante (web y WhatsApp) si necesitas desconectarlo.";
+  } catch {}
+}
+async function togglePause(){
+  if (!_paused && !confirm(`¿Pausar el asistente? Dejará de responder en la web y WhatsApp (pedirá contactar a ${_vocab.business} directamente) hasta que lo reanudes.`)) return;
+  await fetch("/api/assistant-state", { method:"POST",
+    headers:{ Authorization:"Bearer "+token(), "Content-Type":"application/json" },
+    body: JSON.stringify({ paused: !_paused }) });
+  refreshPause();
+}
+
+async function deleteLead(id){
+  if(!confirm("Delete this lead and ALL their data (conversation, appointments)? This is how you honor a data-deletion request. It cannot be undone.")) return;
+  await fetch("/api/leads/"+id, { method:"DELETE", headers:{ Authorization:"Bearer "+token() } });
+  load();
+}
+
+async function exportCsv(){
+  const r = await fetch("/api/leads.csv", { headers: { Authorization: "Bearer " + token() } });
+  const blob = await r.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "leads.csv"; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+if (token()) tryLogin();
+</script>
+</body>
+</html>

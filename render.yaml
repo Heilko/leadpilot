@@ -1,0 +1,43 @@
+# Render Blueprint — one client = one deployment.
+# In Render: New → Blueprint → connect this repo. Render reads this file and
+# creates the service. You then fill in the two secret env vars (see below).
+#
+# This default uses Render's cheapest PAID plan ("starter") because it includes a
+# persistent disk, so a redeploy never wipes a paying client's leads/appointments.
+# For a free throwaway DEMO instead: set plan to "free", delete the `disk:` block,
+# and delete the DB_PATH env var (data will reset on each redeploy — fine for demos).
+services:
+  - type: web
+    name: leadpilot
+    runtime: node
+    plan: starter
+    region: frankfurt          # closest to Spain; use "oregon"/"ohio" for the Americas
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true           # every push to GitHub main updates the live site
+    envVars:
+      - key: NODE_VERSION
+        value: "24"            # node:sqlite needs Node 24+ to run without a special flag
+      - key: NODE_ENV
+        value: production      # enables HSTS and production behavior
+      - key: ANTHROPIC_API_KEY
+        sync: false            # paste in the Render dashboard, never commit it
+      - key: DASHBOARD_PASSWORD
+        sync: false            # paste in the Render dashboard
+      - key: DB_PATH
+        value: /var/data/data.sqlite
+    disk:
+      name: leadpilot-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  # ── Marketing website (static, free) ─────────────────────────────
+  # Serves the website/ folder as a plain static site, fully separate
+  # from the product above. Updates automatically on every push.
+  - type: web
+    name: leadpilot-site
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: website
+    autoDeploy: true

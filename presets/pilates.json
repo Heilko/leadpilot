@@ -1,0 +1,49 @@
+{
+  "industry": "estudio de pilates",
+  "defaultAgentName": "Nora",
+  "accentColor": "#4A6B5C",
+  "language": "Match the visitor's language (Spanish or English).",
+  "descriptionTemplate": "{business} es un estudio de pilates con clases reducidas, máquinas reformer y entrenamiento personalizado.",
+  "greetingTemplate": "¡Hola! 👋 Soy {agent}, del estudio {business}. Puedo contarte cómo funcionan las clases y reservarte una clase de prueba en segundos.",
+  "services": [
+    { "name": "Clase de prueba", "duration": 55 },
+    { "name": "Valoración postural inicial", "duration": 45 },
+    { "name": "Clase privada", "duration": 55 },
+    { "name": "Clase reducida de reformer", "duration": 55 }
+  ],
+  "qualifyingQuestions": [
+    "¿Ha hecho pilates antes o empezaría desde cero?",
+    "¿Qué busca: movilidad, fuerza, recuperación o mantenerse en forma?",
+    "¿Qué días y franjas horarias le vienen mejor?"
+  ],
+  "hotLeadCriteria": "Quiere reservar una clase de prueba esta semana, o pregunta por bonos y precios de mensualidad.",
+  "vocabulary": {
+    "customer": "alumno",
+    "customerPlural": "alumnos",
+    "business": "el estudio",
+    "appointment": "clase"
+  },
+  "guardrails": [
+    "NO MEDICAL ADVICE: Never give medical, physiotherapy or rehabilitation advice. If someone mentions an injury, pain, pregnancy or a medical condition, say the instructor will assess it before the first class, and offer to book that class."
+  ],
+  "defaultBusinessHours": {
+    "monday": { "open": "07:00", "close": "21:00" },
+    "tuesday": { "open": "07:00", "close": "21:00" },
+    "wednesday": { "open": "07:00", "close": "21:00" },
+    "thursday": { "open": "07:00", "close": "21:00" },
+    "friday": { "open": "07:00", "close": "20:00" },
+    "saturday": { "open": "09:00", "close": "14:00" },
+    "sunday": null
+  },
+  "widgetUi": {
+    "statusText": "Asistente virtual (IA) · responde al instante",
+    "placeholder": "Escribe tu mensaje…",
+    "sendLabel": "Enviar",
+    "footer": "⚡ Powered by LeadPilot",
+    "privacyText": "Privacidad",
+    "errorText": "Error de conexión. Inténtalo de nuevo.",
+    "busyText": "Ahora mismo no puedo atenderte por chat. Llámanos directamente o inténtalo de nuevo más tarde. 🙏",
+    "limitText": "Hemos llegado al límite de este chat. Llámanos o escríbenos directamente para continuar. 🙏",
+    "pausedText": "El asistente está temporalmente desactivado. Llámanos o contáctanos directamente — ¡te esperamos! 🙏"
+  }
+}

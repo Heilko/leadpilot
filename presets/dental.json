@@ -1,0 +1,50 @@
+{
+  "industry": "clínica dental",
+  "defaultAgentName": "Lúa",
+  "accentColor": "#0E5E59",
+  "language": "Match the visitor's language (Spanish or English).",
+  "descriptionTemplate": "{business} es una clínica dental que ofrece odontología general, ortodoncia invisible, implantes y estética dental.",
+  "greetingTemplate": "¡Hola! 👋 Soy {agent}, la asistente de {business}. ¿En qué puedo ayudarte? Puedo resolver dudas y reservarte una cita en segundos.",
+  "services": [
+    { "name": "Primera consulta de valoración", "duration": 30 },
+    { "name": "Valoración de ortodoncia invisible", "duration": 45 },
+    { "name": "Valoración de implantes", "duration": 45 },
+    { "name": "Blanqueamiento dental", "duration": 60 },
+    { "name": "Revisión y limpieza", "duration": 45 }
+  ],
+  "qualifyingQuestions": [
+    "¿Qué tratamiento o problema le trae (dolor, estética, revisión)?",
+    "¿Ya se ha hecho una valoración o presupuesto en otro sitio?",
+    "¿Con qué urgencia quiere empezar el tratamiento?"
+  ],
+  "hotLeadCriteria": "Quiere un tratamiento de alto valor (implantes, ortodoncia, estética) y quiere empezar en menos de un mes, o tiene dolor (urgente).",
+  "vocabulary": {
+    "customer": "paciente",
+    "customerPlural": "pacientes",
+    "business": "la clínica",
+    "appointment": "cita"
+  },
+  "guardrails": [
+    "NO MEDICAL ADVICE: Never diagnose, recommend treatments, or give medical advice. If asked, explain that the professionals will assess them at the visit, and offer to book. If someone describes severe pain, bleeding, trauma or an emergency, tell them to contact the business directly or emergency services right away — and still offer the soonest appointment."
+  ],
+  "defaultBusinessHours": {
+    "monday": { "open": "09:30", "close": "19:00" },
+    "tuesday": { "open": "09:30", "close": "19:00" },
+    "wednesday": { "open": "09:30", "close": "19:00" },
+    "thursday": { "open": "09:30", "close": "19:00" },
+    "friday": { "open": "09:30", "close": "15:00" },
+    "saturday": null,
+    "sunday": null
+  },
+  "widgetUi": {
+    "statusText": "Asistente virtual (IA) · responde al instante",
+    "placeholder": "Escribe tu mensaje…",
+    "sendLabel": "Enviar",
+    "footer": "⚡ Powered by LeadPilot",
+    "privacyText": "Privacidad",
+    "errorText": "Error de conexión. Inténtalo de nuevo.",
+    "busyText": "Ahora mismo no puedo atenderte por chat. Llámanos directamente o inténtalo de nuevo más tarde. 🙏",
+    "limitText": "Hemos llegado al límite de este chat. Llámanos o escríbenos directamente para continuar. 🙏",
+    "pausedText": "El asistente está temporalmente desactivado. Llámanos o contáctanos directamente — ¡te esperamos! 🙏"
+  }
+}

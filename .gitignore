@@ -1,0 +1,12 @@
+node_modules
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+data
+.DS_Store
+
+# Generated per-client configs (contain the client's own details)
+clients/

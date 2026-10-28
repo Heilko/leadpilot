@@ -1,0 +1,51 @@
+{
+  "industry": "clínica de medicina estética",
+  "defaultAgentName": "Vera",
+  "accentColor": "#9C6B7A",
+  "language": "Match the visitor's language (Spanish or English).",
+  "descriptionTemplate": "{business} es una clínica de medicina estética especializada en tratamientos faciales, corporales y de rejuvenecimiento.",
+  "greetingTemplate": "¡Hola! 👋 Soy {agent}, la asistente de {business}. Puedo resolver tus dudas sobre tratamientos y reservarte una valoración en segundos.",
+  "services": [
+    { "name": "Primera valoración personalizada", "duration": 30 },
+    { "name": "Valoración de tratamiento facial", "duration": 45 },
+    { "name": "Valoración de tratamiento corporal", "duration": 45 },
+    { "name": "Sesión de seguimiento", "duration": 30 },
+    { "name": "Asesoramiento de rejuvenecimiento", "duration": 45 }
+  ],
+  "qualifyingQuestions": [
+    "¿Qué zona o preocupación concreta quiere tratar?",
+    "¿Se ha hecho antes algún tratamiento estético?",
+    "¿Tiene alguna fecha o evento en mente para ver resultados?"
+  ],
+  "hotLeadCriteria": "Quiere un tratamiento concreto de alto valor y quiere empezar en menos de un mes, o tiene un evento con fecha próxima.",
+  "vocabulary": {
+    "customer": "paciente",
+    "customerPlural": "pacientes",
+    "business": "la clínica",
+    "appointment": "cita"
+  },
+  "guardrails": [
+    "NO MEDICAL ADVICE: Never diagnose, recommend a specific treatment, or give medical advice. Say that the doctor will assess suitability in person at the valoración, and offer to book it.",
+    "NO RESULT PROMISES: Never promise a specific aesthetic result, a number of sessions, or recovery times. Those depend on each case and are decided by the doctor."
+  ],
+  "defaultBusinessHours": {
+    "monday": { "open": "10:00", "close": "20:00" },
+    "tuesday": { "open": "10:00", "close": "20:00" },
+    "wednesday": { "open": "10:00", "close": "20:00" },
+    "thursday": { "open": "10:00", "close": "20:00" },
+    "friday": { "open": "10:00", "close": "20:00" },
+    "saturday": { "open": "10:00", "close": "14:00" },
+    "sunday": null
+  },
+  "widgetUi": {
+    "statusText": "Asistente virtual (IA) · responde al instante",
+    "placeholder": "Escribe tu mensaje…",
+    "sendLabel": "Enviar",
+    "footer": "⚡ Powered by LeadPilot",
+    "privacyText": "Privacidad",
+    "errorText": "Error de conexión. Inténtalo de nuevo.",
+    "busyText": "Ahora mismo no puedo atenderte por chat. Llámanos directamente o inténtalo de nuevo más tarde. 🙏",
+    "limitText": "Hemos llegado al límite de este chat. Llámanos o escríbenos directamente para continuar. 🙏",
+    "pausedText": "El asistente está temporalmente desactivado. Llámanos o contáctanos directamente — ¡te esperamos! 🙏"
+  }
+}

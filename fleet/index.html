@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LeadPilot — Fleet Command Center</title>
+<style>
+  :root{
+    --ink:#14201E; --muted:#5E6E6B; --paper:#EEF2F1; --surface:#FFFFFF;
+    --accent:#0E5E59; --line:#DCE4E2; --hot:#C84B2F; --warm:#D99A2B;
+    --ok:#1F9D55; --down:#C84B2F; --cold:#7A8C99;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--paper);color:var(--ink);font-size:14px}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 64px}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+  h1{font-size:22px;letter-spacing:-.02em}
+  h1 span{color:var(--accent)}
+  .btn{border:none;border-radius:9px;background:var(--accent);color:#fff;font-weight:600;font-size:13px;
+    cursor:pointer;padding:9px 15px;font-family:inherit}
+  .btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--line)}
+  .totals{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .stat b{font-size:26px;display:block;letter-spacing:-.02em}
+  .stat span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .stat.hotline b{color:var(--hot)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0;overflow:hidden}
+  .card .top{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+  .card .swatch{width:10px;height:34px;border-radius:5px;flex:none}
+  .card .name{font-weight:600;font-size:15px;line-height:1.2}
+  .card .ind{color:var(--muted);font-size:12px}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none;margin-left:auto}
+  .dot.ok{background:var(--ok)} .dot.down{background:var(--down)} .dot.wait{background:var(--warm)}
+  .card .body{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px 8px}
+  .kv b{font-size:19px;display:block;letter-spacing:-.01em}
+  .kv b.hot{color:var(--hot)}
+  .kv span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+  .card .foot{padding:10px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    align-items:center;font-size:12px;color:var(--muted)}
+  .card .foot a{color:var(--accent);text-decoration:none;font-weight:600}
+  .card .foot a:hover{text-decoration:underline}
+  .card.err .body{display:block;color:var(--down);font-size:13px;padding:18px 16px}
+  .x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:0 2px}
+  .empty{padding:48px 20px;text-align:center;color:var(--muted);background:var(--surface);
+    border:1px dashed var(--line);border-radius:14px}
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(20,32,30,.45);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--surface);border-radius:14px;max-width:420px;width:100%;padding:24px}
+  .modal h2{font-size:17px;margin-bottom:4px}
+  .modal p{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .modal label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px}
+  .modal input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit}
+  .modal .row{display:flex;gap:10px;margin-top:20px}
+  .modal .row .btn{flex:1}
+  .muted{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Lead<span>Pilot</span> · Fleet Command Center</h1>
+    <div style="display:flex;gap:8px">
+      <button class="btn ghost" onclick="load()">Refresh</button>
+      <button class="btn" onclick="openAdd()">+ Add deployment</button>
+    </div>
+  </header>
+
+  <div class="totals" id="totals"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)close_()">
+  <div class="modal">
+    <h2 id="mTitle">Add a deployment</h2>
+    <p>Point this at one client's LeadPilot. The password is that deployment's <code>DASHBOARD_PASSWORD</code>.</p>
+    <label>Label (any name you like)</label>
+    <input id="mName" placeholder="Estudio Chamberí"/>
+    <label>Base URL</label>
+    <input id="mUrl" placeholder="https://sonrisa.onrender.com"/>
+    <label>Dashboard password</label>
+    <input id="mPw" type="password" placeholder="••••••••"/>
+    <div class="row">
+      <button class="btn ghost" onclick="close_()">Cancel</button>
+      <button class="btn" onclick="save()">Save</button>
+    </div>
+    <p class="muted">Stored only in this browser (localStorage). Nothing is sent anywhere except directly to each deployment you add.</p>
+  </div>
+</div>
+
+<script>
+const KEY = "lp_fleet_deployments";
+let editing = null;
+
+function load_list(){ try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
+function save_list(l){ localStorage.setItem(KEY, JSON.stringify(l)); }
+function esc(s){ const d=document.createElement("div"); d.textContent=s==null?"":s; return d.innerHTML; }
+function clean(u){ return (u||"").trim().replace(/\/+$/,""); }
+
+function openAdd(){
+  editing = null;
+  document.getElementById("mTitle").textContent = "Add a deployment";
+  document.getElementById("mName").value = "";
+  document.getElementById("mUrl").value = "";
+  document.getElementById("mPw").value = "";
+  document.getElementById("modalBg").classList.add("open");
+}
+function openEdit(i){
+  const d = load_list()[i]; if(!d) return;
+  editing = i;
+  document.getElementById("mTitle").textContent = "Edit deployment";
+  document.getElementById("mName").value = d.name || "";
+  document.getElementById("mUrl").value = d.url || "";
+  document.getElementById("mPw").value = d.pw || "";
+  document.getElementById("modalBg").classList.add("open");
+}
+function close_(){ document.getElementById("modalBg").classList.remove("open"); }
+function save(){
+  const d = {
+    name: document.getElementById("mName").value.trim(),
+    url: clean(document.getElementById("mUrl").value),
+    pw: document.getElementById("mPw").value,
+  };
+  if(!d.url){ alert("Base URL is required."); return; }
+  const list = load_list();
+  if(editing!=null) list[editing]=d; else list.push(d);
+  save_list(list); close_(); load();
+}
+function remove(i){
+  if(!confirm("Remove this deployment from the view? (It does not affect the deployment itself.)")) return;
+  const list = load_list(); list.splice(i,1); save_list(list); load();
+}
+
+function timeAgo(iso){
+  if(!iso) return "no activity yet";
+  const t = Date.parse(iso.replace(" ","T")+ (iso.length<=16?"":"") );
+  if(isNaN(t)) return iso;
+  const s = Math.floor((Date.now()-t)/1000);
+  if(s<60) return "just now";
+  if(s<3600) return Math.floor(s/60)+"m ago";
+  if(s<86400) return Math.floor(s/3600)+"h ago";
+  return Math.floor(s/86400)+"d ago";
+}
+
+async function fetchOne(d){
+  const ctrl = new AbortController();
+  const to = setTimeout(()=>ctrl.abort(), 8000);
+  try{
+    const r = await fetch(d.url + "/api/fleet-summary", {
+      headers: { Authorization: "Bearer " + (d.pw||"") }, signal: ctrl.signal,
+    });
+    clearTimeout(to);
+    if(r.status===401) return { status:"auth" };
+    if(!r.ok) return { status:"down", detail:"HTTP "+r.status };
+    const data = await r.json();
+    return { status:"ok", data };
+  }catch(e){
+    clearTimeout(to);
+    return { status:"down", detail:"unreachable" };
+  }
+}
+
+function card(d, i, res){
+  if(res.status==="auth")
+    return `<div class="card err"><div class="top"><div class="swatch" style="background:var(--down)"></div>
+      <div><div class="name">${esc(d.name||d.url)}</div><div class="ind">${esc(d.url)}</div></div>
+      <span class="dot down"></span><button class="x" title="Edit" onclick="openEdit(${i})">✎</button>
+      <button class="x" title="Remove" onclick="remove(${i})">✕</button></div>
+      <div class="body">Wrong password for this deployment. Click ✎ to fix it.</div></div>`;
+  if(res.status==="down")
+    return `<div class="card err"><div class="top"><div class="swatch" style="background:var(--down)"></div>
+      <div><div class="name">${esc(d.name||d.url)}</div><div class="ind">${esc(d.url)}</div></div>
+      <span class="dot down"></span><button class="x" title="Edit" onclick="openEdit(${i})">✎</button>
+      <button class="x" title="Remove" onclick="remove(${i})">✕</button></div>
+      <div class="body">Offline / unreachable (${esc(res.detail||"")}).</div></div>`;
+
+  const s = res.data;
+  return `<div class="card">
+    <div class="top">
+      <div class="swatch" style="background:${esc(s.accentColor||"#0E5E59")}"></div>
+      <div><div class="name">${esc(s.business||d.name||d.url)}</div><div class="ind">${esc(s.industry||"")}</div></div>
+      <span class="dot ok" title="Online"></span>
+      <button class="x" title="Edit" onclick="openEdit(${i})">✎</button>
+      <button class="x" title="Remove" onclick="remove(${i})">✕</button>
+    </div>
+    <div class="body">
+      <div class="kv"><b>${s.leads.total}</b><span>Leads</span></div>
+      <div class="kv"><b class="hot">${s.leads.hot}</b><span>Hot</span></div>
+      <div class="kv"><b>${s.appointments.upcoming}</b><span>Upcoming</span></div>
+      <div class="kv"><b>$${(s.month.costUsd||0).toFixed(2)}</b><span>API this month</span></div>
+    </div>
+    <div class="foot">
+      <span>Last activity: ${timeAgo(s.lastActivityAt)}</span>
+      <a href="${esc(d.url)}/dashboard" target="_blank" rel="noopener">Open dashboard →</a>
+    </div>
+  </div>`;
+}
+
+async function load(){
+  const list = load_list();
+  const grid = document.getElementById("grid");
+  const totals = document.getElementById("totals");
+  if(!list.length){
+    totals.innerHTML = "";
+    grid.innerHTML = `<div class="empty">No deployments yet.<br><br>
+      Click <b>+ Add deployment</b> and paste a client's URL and dashboard password.</div>`;
+    return;
+  }
+  grid.innerHTML = list.map((d,i)=>`<div class="card"><div class="top">
+    <div class="swatch" style="background:var(--cold)"></div>
+    <div><div class="name">${esc(d.name||d.url)}</div><div class="ind">loading…</div></div>
+    <span class="dot wait"></span></div><div class="body"></div></div>`).join("");
+
+  const results = await Promise.all(list.map(fetchOne));
+  grid.innerHTML = list.map((d,i)=>card(d,i,results[i])).join("");
+
+  let online=0, leads=0, hot=0, upcoming=0, cost=0;
+  results.forEach(r=>{ if(r.status==="ok"){ online++; const s=r.data;
+    leads+=s.leads.total; hot+=s.leads.hot; upcoming+=s.appointments.upcoming; cost+=s.month.costUsd||0; }});
+  totals.innerHTML = `
+    <div class="stat"><b>${online}/${list.length}</b><span>Online</span></div>
+    <div class="stat"><b>${leads}</b><span>Total leads</span></div>
+    <div class="stat hotline"><b>${hot}</b><span>Hot leads</span></div>
+    <div class="stat"><b>${upcoming}</b><span>Upcoming appts</span></div>
+    <div class="stat"><b>$${cost.toFixed(2)}</b><span>API spend / month</span></div>`;
+}
+
+document.getElementById("mPw").addEventListener("keydown", e=>{ if(e.key==="Enter") save(); });
+load();
+</script>
+</body>
+</html>

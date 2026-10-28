@@ -1,0 +1,47 @@
+{
+  "industry": "boutique de moda femenina",
+  "defaultAgentName": "Alma",
+  "accentColor": "#1E1B1A",
+  "language": "Match the visitor's language (Spanish or English).",
+  "descriptionTemplate": "{business} es una boutique de moda femenina con atención personalizada, asesoramiento de imagen y pruebas privadas.",
+  "greetingTemplate": "¡Hola! 👋 Soy {agent}, de {business}. Puedo resolver tus dudas y reservarte una cita de asesoramiento o una prueba privada.",
+  "services": [
+    { "name": "Cita de asesoramiento de imagen", "duration": 60 },
+    { "name": "Prueba privada en tienda", "duration": 45 },
+    { "name": "Cita de compra personalizada", "duration": 60 },
+    { "name": "Ajustes y arreglos", "duration": 30 }
+  ],
+  "qualifyingQuestions": [
+    "¿Busca algo para una ocasión concreta o para el día a día?",
+    "¿Ha venido antes a la tienda o es su primera visita?",
+    "¿Para qué fecha lo necesita?"
+  ],
+  "hotLeadCriteria": "Busca para un evento con fecha próxima, o pide una cita de asesoramiento o prueba privada.",
+  "vocabulary": {
+    "customer": "cliente",
+    "customerPlural": "clientas",
+    "business": "la tienda",
+    "appointment": "cita"
+  },
+  "guardrails": [],
+  "defaultBusinessHours": {
+    "monday": { "open": "10:00", "close": "20:00" },
+    "tuesday": { "open": "10:00", "close": "20:00" },
+    "wednesday": { "open": "10:00", "close": "20:00" },
+    "thursday": { "open": "10:00", "close": "20:00" },
+    "friday": { "open": "10:00", "close": "20:00" },
+    "saturday": { "open": "11:00", "close": "20:00" },
+    "sunday": null
+  },
+  "widgetUi": {
+    "statusText": "Asistente virtual (IA) · responde al instante",
+    "placeholder": "Escribe tu mensaje…",
+    "sendLabel": "Enviar",
+    "footer": "⚡ Powered by LeadPilot",
+    "privacyText": "Privacidad",
+    "errorText": "Error de conexión. Inténtalo de nuevo.",
+    "busyText": "Ahora mismo no puedo atenderte por chat. Llámanos directamente o inténtalo de nuevo más tarde. 🙏",
+    "limitText": "Hemos llegado al límite de este chat. Llámanos o escríbenos directamente para continuar. 🙏",
+    "pausedText": "El asistente está temporalmente desactivado. Llámanos o contáctanos directamente — ¡te esperamos! 🙏"
+  }
+}

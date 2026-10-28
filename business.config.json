@@ -1,0 +1,96 @@
+{
+  "businessName": "Clínica Sonrisa",
+  "contactPhone": "",
+  "industry": "dental clinic",
+  "description": "A modern dental clinic in Villa Morra, Asunción, offering general dentistry, invisible orthodontics (Invisalign), implants and teeth whitening.",
+  "services": [
+    {
+      "name": "Free first consultation",
+      "duration": 30
+    },
+    {
+      "name": "Invisalign assessment",
+      "duration": 45
+    },
+    {
+      "name": "Dental implant consultation",
+      "duration": 45
+    },
+    {
+      "name": "Teeth whitening session",
+      "duration": 60
+    },
+    {
+      "name": "General check-up & cleaning",
+      "duration": 45
+    }
+  ],
+  "qualifyingQuestions": [
+    "What treatment or problem brings them in (pain, aesthetics, check-up)?",
+    "Have they had a consultation or quote elsewhere?",
+    "How soon do they want to start treatment?"
+  ],
+  "hotLeadCriteria": "Wants high-value treatment (implants, Invisalign, whitening) and wants to start within 1 month, or is in pain (urgent).",
+  "businessHours": {
+    "monday": {
+      "open": "09:30",
+      "close": "19:00"
+    },
+    "tuesday": {
+      "open": "09:30",
+      "close": "19:00"
+    },
+    "wednesday": {
+      "open": "09:30",
+      "close": "19:00"
+    },
+    "thursday": {
+      "open": "09:30",
+      "close": "19:00"
+    },
+    "friday": {
+      "open": "09:30",
+      "close": "15:00"
+    },
+    "saturday": null,
+    "sunday": null
+  },
+  "timezone": "America/Asuncion",
+  "language": "Match the visitor's language (Spanish or English).",
+  "widget": {
+    "accentColor": "#0E5E59",
+    "agentName": "Lúa",
+    "greeting": "¡Hola! 👋 Soy Lúa, la asistente de Clínica Sonrisa. ¿En qué puedo ayudarte? Puedo resolver dudas y reservarte una cita en segundos.",
+    "position": "right",
+    "privacyUrl": "",
+    "ui": {
+      "statusText": "Asistente virtual (IA) · responde al instante",
+      "placeholder": "Escribe tu mensaje…",
+      "sendLabel": "Enviar",
+      "footer": "⚡ Powered by LeadPilot",
+      "privacyText": "Privacidad",
+      "errorText": "Error de conexión. Inténtalo de nuevo.",
+      "busyText": "Ahora mismo no puedo atenderte por chat. Llámanos directamente o inténtalo de nuevo más tarde. 🙏",
+      "limitText": "Hemos llegado al límite de este chat. Llámanos o escríbenos directamente para continuar. 🙏",
+      "pausedText": "El asistente está temporalmente desactivado. Llámanos o contáctanos directamente — ¡te esperamos! 🙏"
+    }
+  },
+  "notifications": {
+    "dashboardUrl": "",
+    "notifyOnBooking": true,
+    "notifyOnHotLead": true,
+    "email": {
+      "enabled": true,
+      "to": "you@example.com",
+      "from": "Clínica Sonrisa <onboarding@resend.dev>",
+      "confirmPatient": true
+    },
+    "telegram": {
+      "enabled": false,
+      "chatId": ""
+    },
+    "webhook": {
+      "enabled": false
+    }
+  }
+}

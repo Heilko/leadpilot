@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.env
+.env.*
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+data
+.git
+.gitignore
+.DS_Store
+fleet
+website
+*.md
